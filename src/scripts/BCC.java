@@ -83,6 +83,17 @@ public class BCC extends Script implements Painting {
             cannon = objects[0];
         }
 
+        RSObject[] objects = Objects.findNearest(15, 5);
+        if (objects.length > 0) {
+            System.out.println("Found a broken cannon..");
+            RSObject object = objects[0];
+            if (object.getPosition().getX() == cannon.getPosition().getX() && object.getPosition().getY() == cannon.getPosition().getY()) {
+                System.out.println("Shit, it looks like ours.. Let's try to repair it.");
+                status = "Repairing cannon";
+                return DynamicClicking.clickRSObject(object, 0);
+            }
+        }
+
         status = "Loading cannon";
         System.out.println("Loading cannon..");
         return DynamicClicking.clickRSObject(cannon, "Fire");
