@@ -70,6 +70,22 @@ public class BCC extends Script implements Painting {
         return false;
     }
 
+    private boolean repairCannon() {
+        if (cannon != null) {
+            RSObject[] objects = Objects.findNearest(15, 5);
+            if (objects.length > 0) {
+                System.out.println("Found a broken cannon..");
+                RSObject object = objects[0];
+                if (object.getPosition().getX() == cannon.getPosition().getX() && object.getPosition().getY() == cannon.getPosition().getY()) {
+                    System.out.println("Shit, it looks like ours.. Let's try to repair it.");
+                    status = "Repairing cannon";
+                    return DynamicClicking.clickRSObject(object, "Repair");
+                }
+            }
+        }
+        return false;
+    }
+
     private boolean loadCannon() {
         if (cannon == null) {
             status = "Searching";
@@ -81,17 +97,6 @@ public class BCC extends Script implements Painting {
             }
 
             cannon = objects[0];
-        }
-
-        RSObject[] objects = Objects.findNearest(15, 5);
-        if (objects.length > 0) {
-            System.out.println("Found a broken cannon..");
-            RSObject object = objects[0];
-            if (object.getPosition().getX() == cannon.getPosition().getX() && object.getPosition().getY() == cannon.getPosition().getY()) {
-                System.out.println("Shit, it looks like ours.. Let's try to repair it.");
-                status = "Repairing cannon";
-                return DynamicClicking.clickRSObject(object, 0);
-            }
         }
 
         status = "Loading cannon";
@@ -131,7 +136,7 @@ public class BCC extends Script implements Painting {
                     break;
                 }
 
-                sleep(General.random(2000, 6000));
+                sleep(General.random(500, 1500));
 
                 status = "Loading cannon";
                 if (!(loadCannon())) {
@@ -144,7 +149,13 @@ public class BCC extends Script implements Painting {
             }
 
             if (time >= General.random(500, 1000)) {
-                loadCannon();
+                if (!(loadCannon())) {
+                    System.out.println("Failed to load cannon.. Let's see if it's broken.");
+                    if (!(repairCannon())) {
+                        System.out.println("lol something fucking broke");
+                        break;
+                    }
+                }
                 time = 0;
             } else {
                 status = "Chilling";
